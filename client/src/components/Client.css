@@ -1,0 +1,17 @@
+/* Client.css */
+.client-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .client-avatar {
+    margin-right: 1rem;
+    border-radius: 14px; /* Applied to the Avatar component's `round` property */
+  }
+  
+  .client-username {
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+  }
+  
