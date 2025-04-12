@@ -16,6 +16,7 @@ function Home() {
         "&scope=repo"
     );
   }
+  
 
   useEffect(() => {
     const queryString = window.location.search;
@@ -60,7 +61,11 @@ function Home() {
         return response.json();
       })
       .then((data) => {
+        
+        console.log(data.login);
         console.log(data);
+         localStorage.setItem("username", data.login);
+        // console.log(data);
       })
       .catch((error) => {
         console.error("Error fetching user data:", error);

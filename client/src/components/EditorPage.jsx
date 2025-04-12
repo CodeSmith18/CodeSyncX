@@ -39,7 +39,7 @@ function EditorPage() {
   const [output, setOutput] = useState("");
   const [isCompileWindowOpen, setIsCompileWindowOpen] = useState(false);
   const [isCompiling, setIsCompiling] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState("python3");
+  const [selectedLanguage, setSelectedLanguage] = useState("cpp");
   const codeRef = useRef(null);
 
   const Location = useLocation();
@@ -157,6 +157,29 @@ function EditorPage() {
   const toggleCompileWindow = () => {
     setIsCompileWindowOpen(!isCompileWindowOpen);
   };
+  const uploadToGitHub = async () => {
+    try {
+      const owner = "CodeSmith18";
+      const repo = "your-repository-name";
+      const commitMessage = "Code uploaded from Editor";
+      const token = localStorage.getItem("access_token"); 
+      
+      const response = await axios.post("http://localhost:5000/github/uploadFile", {
+        owner,
+        repo,
+        content: codeRef.current,
+        commitMessage,
+      }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      
+      toast.success("File uploaded to GitHub successfully!");
+      console.log(response.data);
+    } catch (error) {
+      console.error("Upload failed", error);
+      toast.error("Failed to upload file to GitHub");
+    }
+  };
 
   return (
     <div className="main-container">
@@ -177,9 +200,11 @@ function EditorPage() {
             >
               {isCompiling ? "Compiling..." : "Run Code"}
             </button>
-            
+            <div className="button-group">
+          <button className="upload-btn" onClick={uploadToGitHub}>Upload to GitHub</button>
+        </div>
           </div>
-          
+
           <textarea
             className="compiler-input"
             onChange={handelInput}

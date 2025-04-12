@@ -9,6 +9,9 @@ const socketHandlers = require("./socket/handlers");
 const ACTIONS = require("./Actions.js");
 const cors = require("cors");
 const githubRoutes = require('./routes/githubRoutes.js');
+const mongoConfig = require("./db/mongooseConfig.js");
+const userRoutes = require('./routes/userRoutes.js');
+const bcrypt = require('bcryptjs');
 
 
 dotenv.config();
@@ -31,10 +34,13 @@ app.use(cors(corsOptions));
 app.use("/compile", compileRoutes);
 
 app.use('/github', githubRoutes);
+app.use('/users',userRoutes);
 
 // Socket Handlers
 const userSocketMap = {};
 socketHandlers(io, userSocketMap, ACTIONS);
+
+mongoConfig();
 
 // Start Server
 server.listen(port, () => {
