@@ -1,135 +1,232 @@
-const express = require('express');
-const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
+import express from 'express';
+import fetch from 'node-fetch';
+import axios from 'axios';
+import { Octokit } from '@octokit/rest';
+import { createOAuthAppAuth } from '@octokit/auth-oauth-app';
+
+import User from '../Models/userModel.js';
+import jwt from "jsonwebtoken";
+
 const router = express.Router();
-const axios = require('axios');
 const GITHUB_API_URL = 'https://api.github.com';
 
 
 // Helper function to make GitHub API requests
 async function githubRequest(url, method, token, body = null) {
-    const headers = {
-        'Authorization': `Bearer ${token}`,
-        'Accept': 'application/vnd.github.v3+json',
-        'Content-Type': 'application/json',
-    };
-    const options = { method, headers };
-    if (body) options.body = JSON.stringify(body);
-    
-    const response = await fetch(url, options);
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.message || 'GitHub API error');
-    return data;
+  const headers = {
+    'Authorization': `Bearer ${token}`,
+    'Accept': 'application/vnd.github.v3+json',
+    'Content-Type': 'application/json',
+  };
+  const options = { method, headers };
+  if (body) options.body = JSON.stringify(body);
+
+  const response = await fetch(url, options);
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message || 'GitHub API error');
+  return data;
 }
 
 // Get GitHub Access Token
 router.get('/getAccessToken', async (req, res) => {
-    if (!req.query.code) {
-        return res.status(400).json({ error: 'Authorization code is missing' });
-    }
-    
-    const params = new URLSearchParams({
-        client_id: process.env.GITHUB_CLIENT_ID,
-        client_secret: process.env.GITHUB_CLIENT_SECRET,
-        code: req.query.code,
-        scope: 'user repo',
-    });
+  if (!req.query.code) {
+    return res.status(400).json({ error: 'Authorization code is missing' });
+  }
 
-    try {
-        const response = await fetch('https://github.com/login/oauth/access_token', {
-            method: 'POST',
-            headers: { 'Accept': 'application/json' },
-            body: params,
-        });
-        const data = await response.json();
-        console.log('Access Token:', data.access_token);
-        if (!data.access_token) throw new Error('Invalid authorization code');
-        res.json(data);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Error fetching access token' });
-    }
+  const params = new URLSearchParams({
+    client_id: process.env.GITHUB_CLIENT_ID,
+    client_secret: process.env.GITHUB_CLIENT_SECRET,
+    code: req.query.code,
+    scope: 'user repo',
+  });
+
+  try {
+    const response = await fetch('https://github.com/login/oauth/access_token', {
+      method: 'POST',
+      headers: { 'Accept': 'application/json' },
+      body: params,
+    });
+    const data = await response.json();
+    console.log('Access Token:', data.access_token);
+    if (!data.access_token) throw new Error('Invalid authorization code');
+    res.json(data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error fetching access token' });
+  }
 });
 
 // Get GitHub User Data
 router.get('/getUserData', async (req, res) => {
-    const authHeader = req.get('Authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(400).json({ error: 'Access token missing or invalid' });
+  const authHeader = req.get('Authorization');
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(400).json({ error: 'Access token missing or invalid' });
+  }
+
+  const accessToken = authHeader.split(' ')[1];
+
+  try {
+    const githubUser = await githubRequest(`${GITHUB_API_URL}/user`, 'GET', accessToken);
+
+    const email = githubUser.email || `${githubUser.id}@github.fake.com`;
+    const username = githubUser.login;
+
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      user = new User({
+        username,
+        email,
+        password: "",
+        authType: "github",
+      });
+
+      await user.save();
+      console.log(`✅ New user created from GitHub: ${username}`);
+    } else {
+      console.log(`🔁 Returning user logged in via GitHub: ${username}`);
     }
-    const accessToken = authHeader.split(' ')[1];
-    
-    try {
-        const data = await githubRequest(`${GITHUB_API_URL}/user`, 'GET', accessToken);
-        res.json(data);
-    } catch (error) {
-        res.status(401).json({ error: error.message });
-    }
+
+    const token = jwt.sign(
+      { id: user._id, username: user.username },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    res.status(200).json({
+      message: "GitHub login successful",
+      token,
+      username: user.username,
+      userId: user._id,   // 👈 Added this
+      email: user.email
+    });
+
+  } catch (error) {
+    console.error("GitHub login failed:", error.message);
+    res.status(401).json({ error: error.message });
+  }
 });
 
-// Create Repository
-async function createRepository(accessToken, repo) {
-  try {
-      const response = await githubRequest(`${GITHUB_API_URL}/user/repos`, 'POST', accessToken, {
-          name: repo,
-          private: false, // Set to true for private repo
-          description: 'Auto-created repository',
-          auto_init: true // Ensures repo initializes properly
-      });
-      console.log(`Repository ${repo} created successfully.`);
-      return true;
-  } catch (error) {
-      console.error('Error creating repository:', error.message);
-      return false;
-  }
-}
-
-
-// Upload File to GitHub
 router.post('/uploadFile', async (req, res) => {
   const authHeader = req.get('Authorization');
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(400).json({ error: 'Authorization token missing or invalid' });
+    return res.status(400).json({ error: 'Authorization token missing or invalid' });
   }
+
   const accessToken = authHeader.split(' ')[1];
   const { owner, repo, content, commitMessage, branch = 'main' } = req.body;
 
-  if (!owner || !repo || !content || !commitMessage) {
-      return res.status(400).json({ error: 'Missing required fields' });
-  }
+  const octokit = new Octokit({ auth: accessToken });
 
   try {
-      // Generate unique filename
-      const dateStr = new Date().toISOString().split('T')[0];
-      const filePath = `file_${dateStr}.txt`;
-      const repoUrl = `${GITHUB_API_URL}/repos/${owner}/${repo}`;
+    const user = await octokit.rest.users.getAuthenticated();
+    const username = user.data.login;
 
-      // Check if repository exists
-      try {
-          await githubRequest(repoUrl, 'GET', accessToken);
-      } catch (error) {
-          console.log(`Repository ${repo} not found. Creating...`);
-          const created = await createRepository(accessToken, repo);
-          if (!created) return res.status(500).json({ error: 'Failed to create repository' });
+    // Check if the repository already exists
+    try {
+      await octokit.rest.repos.get({ owner: username, repo });
+      console.log(`Repository "${repo}" already exists.`);
+    } catch (err) {
+      if (err.status === 404) {
+        // Repo doesn't exist, create it
+        console.log(`Creating repository "${repo}"...`);
+        await octokit.rest.repos.createForAuthenticatedUser({
+          name: repo,
+          private: false,
+        });
+      } else {
+
+        throw err;
       }
+    }
 
-      // Encode content in base64
-      const encodedContent = Buffer.from(content, 'utf-8').toString('base64');
-      const fileUrl = `${GITHUB_API_URL}/repos/${owner}/${repo}/contents/${filePath}`;
+    // Generate unique filename
+    const now = new Date();
+    const timestamp = now.toISOString().replace(/[:.]/g, '-');
+    const filename = `demo-${timestamp}.cpp`;
 
-      // Upload file (without checking existence)
-      const payload = {
-          message: commitMessage,
-          content: encodedContent,
-          branch: branch,
-      };
+    const contentEncoded = Buffer.from(content).toString('base64');
 
-      const responseData = await githubRequest(fileUrl, 'PUT', accessToken, payload);
-      res.json({ message: 'File uploaded successfully!', filename: filePath, data: responseData });
-  } catch (error) {
-      console.error('Error:', error.message);
-      res.status(500).json({ error: error.message });
+    // Upload file with unique name
+    await octokit.rest.repos.createOrUpdateFileContents({
+      owner: username,
+      repo,
+      path: filename,
+      message: commitMessage || `Add file ${filename}`,
+      content: contentEncoded,
+      branch,
+    });
+
+    res.json({ message: 'File uploaded successfully!', file: filename });
+
+  } catch (err) {
+    console.error('GitHub API error:', err.message);
+    res.status(500).json({ error: err.message });
   }
 });
 
 
-module.exports = router;
+router.get('/listRepoFiles', async (req, res) => {
+
+  const authHeader = req.get('Authorization');
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(400).json({ error: 'Authorization token missing or invalid' });
+  }
+
+  const accessToken = authHeader.split(' ')[1];
+  const repo = "newww";
+  const branch = "main";
+  const { owner } = req.query;
+
+  const octokit = new Octokit({ auth: accessToken });
+
+  try {
+    const refData = await octokit.rest.git.getRef({
+      owner,
+      repo,
+      ref: `heads/${branch}`,
+    });
+
+    const commitsha = refData.data.object.sha;
+
+    const commitData = await octokit.rest.git.getCommit({
+      owner,
+      repo,
+      commit_sha: commitsha,
+    });
+
+    const treeSha = commitData.data.tree.sha;
+
+    const treeData = await octokit.rest.git.getTree({
+      owner,
+      repo,
+      tree_sha: treeSha,
+      recursive: "1",
+    });
+
+    const files = treeData.data.tree.filter(item => item.type === 'blob');
+
+    res.json({
+      repo,
+      branch,
+      totalFiles: files.length,
+      files: files.map(file => ({
+        path: file.path,
+        size: file.size,
+        sha: file.sha,
+        url: `https://github.com/${owner}/${repo}/blob/${branch}/${file.path}`,
+      })),
+
+
+    });
+  }
+  catch (err) {
+    console.error('Error listing repo files:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+
+
+export default router;

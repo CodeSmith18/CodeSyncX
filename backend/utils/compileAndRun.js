@@ -1,6 +1,7 @@
-const { exec } = require("child_process");
-const fs = require("fs/promises");
-const path = require("path");
+import { exec } from "child_process";
+import fs from "fs/promises";
+import path from "path";
+
 
 const compileAndRun = async (filename, language, code, input, res) => {
     const isWindows = process.platform === "win32";
@@ -48,4 +49,4 @@ const compileAndRun = async (filename, language, code, input, res) => {
     }
   };
 
-  module.exports = compileAndRun;
+  export default compileAndRun;

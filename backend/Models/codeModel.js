@@ -1,25 +1,34 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
-const codeSchema  = new mongoose.Schema({
-    code : {
-        type : String,
+const codeSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: true,
     },
-
-    input : {
-        type : String,
+    code: {
+      type: String,
     },
-
-    output : {
-        type: String,
+    input: {
+      type: String,
+    },
+    output: {
+      type: String,
+    },
+    selectedLanguage : {
+          type : String,
     },
     userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'user',  
-        required: true
-    }
-})
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'user',
+      required: true,
+    },
+  },
+  {
+    timestamps: true, // ✅ adds createdAt and updatedAt automatically
+  }
+);
 
-const code = mongoose.model('code',codeSchema);
+const Code = mongoose.model('code', codeSchema);
 
-
-module.exports = code;
+export default Code;

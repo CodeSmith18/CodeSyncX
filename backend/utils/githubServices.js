@@ -1,5 +1,4 @@
-const axios = require("axios");
-
+import axios from "axios";
 
 
 
@@ -44,5 +43,4 @@ const uploadFileToRepo = async (accessToken, owner, repoName, filePath, fileCont
     throw new Error("Error uploading file: " + error.message);
   }
 };
-
-module.exports = { createRepo, uploadFileToRepo ,getToken };
+export { createRepo, uploadFileToRepo, getToken };

@@ -1,7 +1,10 @@
-const express = require('express'); // Import express
-const compileAndRun = require('../utils/compileAndRun');
+import express from 'express'; // Import express
+import compileAndRun from '../utils/compileAndRun.js';
 
 const router = express.Router(); // Initialize the router
+
+
+
 
 router.post('/:lang', async (req, res) => {
   const { lang } = req.params;
@@ -25,4 +28,4 @@ router.post('/:lang', async (req, res) => {
   }
 });
 
-module.exports = router; // Export the router
+export default router; // Export the router

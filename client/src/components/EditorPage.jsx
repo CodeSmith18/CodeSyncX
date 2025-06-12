@@ -75,6 +75,15 @@ function EditorPage() {
         username: username,
       });
 
+      if (Location.state?.codeDetails) {
+        codeRef.current = Location.state.codeDetails.code;
+        setInput(Location.state.codeDetails.input || "");
+        setOutput(Location.state.codeDetails.output || "");
+        setSelectedLanguage(
+          Location.state.codeDetails.selectedLanguage || "cpp"
+        );
+      }
+
       socketRef.current.on(
         ACTIONS.JOINED,
         ({ clients, username, socketId }) => {
@@ -160,24 +169,50 @@ function EditorPage() {
   const uploadToGitHub = async () => {
     try {
       const owner = "CodeSmith18";
-      const repo = "your-repository-name";
+      const repo = "newww";
       const commitMessage = "Code uploaded from Editor";
-      const token = localStorage.getItem("access_token"); 
-      
-      const response = await axios.post("http://localhost:5000/github/uploadFile", {
-        owner,
-        repo,
-        content: codeRef.current,
-        commitMessage,
-      }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      
+      const token = localStorage.getItem("access_token");
+
+      const response = await axios.post(
+        "http://localhost:5000/github/uploadFile",
+        {
+          owner,
+          repo,
+          content: codeRef.current,
+          commitMessage,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
       toast.success("File uploaded to GitHub successfully!");
       console.log(response.data);
     } catch (error) {
       console.error("Upload failed", error);
       toast.error("Failed to upload file to GitHub");
+    }
+  };
+
+  const saveToDatabase = async () => {
+    const userId = localStorage.getItem("userId");
+
+    const code = codeRef.current;
+
+    const data = { code, input, output, userId, selectedLanguage };
+    console.log(code);
+
+    try {
+      const response = await fetch("http://localhost:5000/users/uploadCode", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      console.log(response);
+    } catch (error) {
+      console.error("Error", error);
     }
   };
 
@@ -201,8 +236,10 @@ function EditorPage() {
               {isCompiling ? "Compiling..." : "Run Code"}
             </button>
             <div className="button-group">
-          <button className="upload-btn" onClick={uploadToGitHub}>Upload to GitHub</button>
-        </div>
+              <button className="upload-btn" onClick={uploadToGitHub}>
+                Upload to GitHub
+              </button>
+            </div>
           </div>
 
           <textarea
@@ -236,6 +273,9 @@ function EditorPage() {
           </button>
           <button className="leave-btn" onClick={leaveRoom}>
             Leave Room
+          </button>
+          <button className="leave-btn" onClick={saveToDatabase}>
+            Save to Database
           </button>
         </div>
 

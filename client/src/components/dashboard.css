@@ -1,0 +1,124 @@
+.dashboard{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: white;
+    height: 100vh;
+}
+
+.menubar{
+    display: flex;
+    flex-direction: column;
+    width: 20%;
+    height: 95vh;
+    justify-content: center;
+     background-color: wheat;
+    margin:15px;
+    padding: 10px;
+}
+.dash{
+   background-color: wheat;
+    width: 80%;
+    height: 95vh;
+    margin:15px;
+    padding: 10px;
+}
+
+.codelist .card {
+  transition: transform 0.2s ease;
+}
+.codelist .card:hover {
+  transform: scale(1.02);
+}
+
+.codelist {
+  padding: 20px;
+  color: #333;
+}
+
+.codelist h3 {
+  margin-bottom: 20px;
+}
+
+.no-codes {
+  font-style: italic;
+  color: gray;
+}
+
+.code-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.code-card {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 15px;
+  background-color: #f9f9f9;
+  transition: box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.code-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.code-card h4 {
+  margin-bottom: 10px;
+  color: #222;
+}
+
+.code-card p {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+.open-btn {
+  margin-top: 10px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.open-btn:hover {
+  background-color: #45a049;
+}
+
+.delete-btn {
+  background-color: #f44336;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+
+.file-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.file-item {
+  margin-bottom: 10px;
+  background-color: #f3f3f3;
+  padding: 10px;
+  border-radius: 6px;
+}
+
+.file-link {
+  font-weight: bold;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.file-link:hover {
+  text-decoration: underline;
+}
+
+

@@ -1,17 +1,18 @@
-const express = require("express");
-const http = require("http");
-const { Server } = require("socket.io");
-const bodyParser = require("body-parser");
-const dotenv = require("dotenv");
-const corsOptions = require("./config/corsOptions");
-const compileRoutes = require("./routes/compile.js");
-const socketHandlers = require("./socket/handlers");
-const ACTIONS = require("./Actions.js");
-const cors = require("cors");
-const githubRoutes = require('./routes/githubRoutes.js');
-const mongoConfig = require("./db/mongooseConfig.js");
-const userRoutes = require('./routes/userRoutes.js');
-const bcrypt = require('bcryptjs');
+import express from "express";
+import http from "http";
+import { Server } from "socket.io";
+import bodyParser from "body-parser";
+import dotenv from "dotenv";
+import cors from "cors";
+import bcrypt from "bcryptjs";
+
+import corsOptions from "./config/corsOptions.js";
+import compileRoutes from "./routes/compile.js";
+import socketHandlers from "./socket/handlers.js";
+import ACTIONS from "./Actions.js";
+import githubRoutes from './routes/githubRoutes.js';
+import mongoConfig from "./db/mongooseConfig.js";
+import userRoutes from './routes/userRoutes.js';
 
 
 dotenv.config();
