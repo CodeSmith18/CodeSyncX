@@ -6,6 +6,7 @@ import "codemirror/addon/edit/closebrackets";
 import "codemirror/lib/codemirror.css";
 import CodeMirror from "codemirror";
 import { ACTIONS } from "../Actions";
+import "./editor.css"
 
 function Editor({ socketRef, roomId, onCodeChange }) {
   const editorRef = useRef(null);
@@ -56,11 +57,12 @@ function Editor({ socketRef, roomId, onCodeChange }) {
     };
   }, [socketRef.current]);
 
-  return (
-    <div style={{ height: "88vh", width : "68vw"  }}>
-      <textarea id="realtimeEditor"></textarea>
-    </div>
-  );
+ return (
+  <div className="editor-container">
+    <textarea id="realtimeEditor"></textarea>
+  </div>
+);
+
 }
 
 export default Editor;

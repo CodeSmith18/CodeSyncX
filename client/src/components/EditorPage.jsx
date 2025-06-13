@@ -41,6 +41,7 @@ function EditorPage() {
   const [isCompiling, setIsCompiling] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState("cpp");
   const codeRef = useRef(null);
+  const [title, setTitle] = useState("");
 
   const Location = useLocation();
   const navigate = useNavigate();
@@ -70,6 +71,7 @@ function EditorPage() {
         navigate("/");
       };
       const username = Location.state?.username || "Guest";
+      setTitle(Location.state?.title || "file");
       socketRef.current.emit(ACTIONS.JOIN, {
         roomId,
         username: username,
@@ -168,8 +170,8 @@ function EditorPage() {
   };
   const uploadToGitHub = async () => {
     try {
-      const owner = "CodeSmith18";
-      const repo = "newww";
+      const owner = localStorage.getItem("username")
+      const repo = "CodeSync";
       const commitMessage = "Code uploaded from Editor";
       const token = localStorage.getItem("access_token");
 
@@ -180,6 +182,7 @@ function EditorPage() {
           repo,
           content: codeRef.current,
           commitMessage,
+          title,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -199,7 +202,7 @@ function EditorPage() {
 
     const code = codeRef.current;
 
-    const data = { code, input, output, userId, selectedLanguage };
+    const data = { code, input, output, userId, selectedLanguage, title };
     console.log(code);
 
     try {
@@ -210,7 +213,7 @@ function EditorPage() {
         },
         body: JSON.stringify(data),
       });
-      console.log(response);
+      toast.success("file saved");
     } catch (error) {
       console.error("Error", error);
     }
@@ -269,7 +272,7 @@ function EditorPage() {
           </select>
 
           <button className="copy-btn" onClick={copyRoomId}>
-            Copy Room Link
+            Share Room Link
           </button>
           <button className="leave-btn" onClick={leaveRoom}>
             Leave Room
@@ -277,15 +280,20 @@ function EditorPage() {
           <button className="leave-btn" onClick={saveToDatabase}>
             Save to Database
           </button>
+          <button className="leave-btn" onClick={()=>{navigate("/dashboard")}}>
+            Dashboard
+          </button>
         </div>
 
-        <Editor
-          socketRef={socketRef}
-          roomId={roomId}
-          onCodeChange={(code) => {
-            codeRef.current = code;
-          }}
-        />
+      <div className="editor-wrapper">
+  <Editor
+    socketRef={socketRef}
+    roomId={roomId}
+    onCodeChange={(code) => {
+      codeRef.current = code;
+    }}
+  />
+</div>
       </div>
     </div>
   );

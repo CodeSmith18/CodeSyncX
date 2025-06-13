@@ -9,9 +9,9 @@ const router = express.Router();
 
 // ⏫ Upload code
 router.post('/uploadCode', async (req, res) => {
-    const { code, input, output, userId, selectedLanguage } = req.body;
+    const { code, input, output, userId, selectedLanguage, title } = req.body;
 
-    const title = "something";
+    
 
     console.log(code);
 

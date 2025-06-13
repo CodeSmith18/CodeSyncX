@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import "./Home.css";
 
 function Home() {
   const [username, setUsername] = useState("");
@@ -8,6 +9,7 @@ function Home() {
   const [password, setPassword] = useState("");
   const CLIENT_ID = "Ov23lixwco48McIOnHs2";
   const [rerender, setRerender] = useState(false);
+  const [isSignup, setIsSignup] = useState(false); // for toggle
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -51,7 +53,7 @@ function Home() {
         localStorage.setItem("userId", data.userId);
         setUsername(data.username);
         toast.success("GitHub login successful");
-        navigate("/dashboard"); // 👈 redirect
+        navigate("/dashboard");
       } else {
         toast.error(data.error || "Failed to fetch GitHub user data");
       }
@@ -75,7 +77,7 @@ function Home() {
         localStorage.setItem("username", data.username);
         setUsername(data.username);
         toast.success("Signup successful!");
-        navigate("/dashboard"); // 👈 redirect
+        navigate("/dashboard");
       } else {
         toast.error(data.message || "Signup failed");
       }
@@ -98,7 +100,7 @@ function Home() {
         localStorage.setItem("userId", data.userId);
         setUsername(data.username);
         toast.success("Login successful!");
-        navigate("/dashboard"); // 👈 redirect
+        navigate("/dashboard");
       } else {
         toast.error(data.message || "Login failed");
       }
@@ -122,75 +124,92 @@ function Home() {
   };
 
   return (
-    <div className="container-fluid">
-      <div className="row justify-content-center align-items-center min-vh-100">
-        <div className="col-12 col-md-6">
-          <div className="card shadow-sm p-3 bg-secondary rounded">
-            <div className="card-body text-center bg-dark">
-              <img
-                src="/images/codecast.png"
-                alt="Logo"
-                className="img-fluid mx-auto d-block mb-2"
-                style={{ maxWidth: "150px" }}
-              />
+    <div className="home-container">
+      <div className="home-card">
+        <div className="home-card-body">
+          <h2 className="app-logo">CodeSyncX</h2>
 
-              <h5 className="text-light">Login with Email</h5>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="form-control mb-2"
-                placeholder="Email"
-              />
-              <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="form-control mb-2"
-                placeholder="Username"
-              />
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="form-control mb-2"
-                placeholder="Password"
-              />
-              <div className="d-flex justify-content-between">
+          <div className={`form-slide ${isSignup ? "signup" : "login"}`}>
+            {isSignup ? (
+              <>
+                <p className="form-title">Create an Account</p>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="form-control"
+                  placeholder="Email"
+                />
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="form-control"
+                  placeholder="Username"
+                />
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="form-control"
+                  placeholder="Password"
+                />
                 <button onClick={signupUser} className="btn btn-warning">
                   Signup
                 </button>
+                <p>
+                  Already have an account?{" "}
+                  <button className="btn-link" onClick={() => setIsSignup(false)}>
+                    Login
+                  </button>
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="form-title">Welcome back!</p>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="form-control"
+                  placeholder="Email"
+                />
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="form-control"
+                  placeholder="Password"
+                />
                 <button onClick={loginUser} className="btn btn-info">
                   Login
                 </button>
-              </div>
-
-              <hr className="bg-light" />
-
-              <h5 className="text-light mt-3">Or</h5>
-              <button
-                className="btn btn-danger btn-lg mt-2"
-                onClick={loginWithGitHub}
-              >
-                Login with GitHub
-              </button>
-
-              {localStorage.getItem("access_token") && (
-                <>
-                  <button
-                    onClick={logout}
-                    className="btn btn-outline-light btn-sm mt-3"
-                  >
-                    Logout
+                <p>
+                  Don't have an account?{" "}
+                  <button className="btn-link" onClick={() => setIsSignup(true)}>
+                    Signup
                   </button>
-                  <p className="text-light mt-2">
-                    Logged in as:{" "}
-                    <strong>{localStorage.getItem("username")}</strong>
-                  </p>
-                </>
-              )}
-            </div>
+                </p>
+              </>
+            )}
           </div>
+
+          <hr />
+          <h5>Or</h5>
+          <button className="btn btn-danger btn-lg" onClick={loginWithGitHub}>
+            Login with GitHub
+          </button>
+
+          {localStorage.getItem("access_token") && (
+            <>
+              <button onClick={logout} className="btn btn-outline-light btn-sm">
+                Logout
+              </button>
+              <p className="logged-user">
+                Logged in as: <strong>{localStorage.getItem("username")}</strong>
+              </p>
+            </>
+          )}
         </div>
       </div>
     </div>

@@ -13,8 +13,8 @@ function App() {
       <Toaster  position='top-center'></Toaster>
     </div>
     <Routes>
-     <Route path='/' element={ <Home /> } />
-     <Route path='/landing' element = {<LandingPage></LandingPage>}></Route>
+     <Route path='/login' element={ <Home /> } />
+     <Route path='/' element = {<LandingPage></LandingPage>}></Route>
      <Route path='/editor/:roomId' element={ <EditorPage /> } />
      <Route path='/dashboard' element = {<Dashboard></Dashboard>}> </Route>
     </Routes>

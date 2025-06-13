@@ -114,7 +114,7 @@ router.post('/uploadFile', async (req, res) => {
   }
 
   const accessToken = authHeader.split(' ')[1];
-  const { owner, repo, content, commitMessage, branch = 'main' } = req.body;
+  const {title, owner, repo, content, commitMessage, branch = 'main' } = req.body;
 
   const octokit = new Octokit({ auth: accessToken });
 
@@ -143,7 +143,7 @@ router.post('/uploadFile', async (req, res) => {
     // Generate unique filename
     const now = new Date();
     const timestamp = now.toISOString().replace(/[:.]/g, '-');
-    const filename = `demo-${timestamp}.cpp`;
+    const filename = `${title}-${timestamp}.cpp`;
 
     const contentEncoded = Buffer.from(content).toString('base64');
 
@@ -174,7 +174,7 @@ router.get('/listRepoFiles', async (req, res) => {
   }
 
   const accessToken = authHeader.split(' ')[1];
-  const repo = "newww";
+  const repo = "CodeSync";
   const branch = "main";
   const { owner } = req.query;
 

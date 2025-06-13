@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import "./landing.css";
+import { useNavigate } from "react-router-dom";
+import { v4 as uuid } from "uuid"
 
 function LandingPage() {
   const [code, setCode] = useState("");
+    const navigate = useNavigate();
 
   const handleGitHubLogin = () => {
-    window.location.href = "http://localhost:5000/api/auth/github";
-  };
+    navigate("/login")
+  }
 
   return (
     <div className="landing">
@@ -46,10 +49,13 @@ function LandingPage() {
         <p className="subtitle">
           Real-time collaborative code editor with GitHub integration.
         </p>
-        <div className="buttons">
-          <button className="btn primary">🧪 Try Live Editor</button>
+        <div className="buttonsl">
+          <button className="btn primary" onClick={()=>{
+            const id = uuid();
+            navigate(`/editor/${id}`);
+          }}>🧪 Try Live Editor</button>
           <button className="btn secondary" onClick={handleGitHubLogin}>
-            🔗 Login with GitHub
+             Login  / SignUp
           </button>
         </div>
       </div>
