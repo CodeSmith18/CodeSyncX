@@ -152,7 +152,7 @@ function Dashboard() {
 
  <button > <h3  onClick={()=>{
   navigate('/')
- }} className="tit">🚀CodeSynx</h3> </button>
+ }} className="tit">🚀CodeSyncX</h3> </button>
 
   <button
     className={activeSection === "editorsection" ? "active" : ""}

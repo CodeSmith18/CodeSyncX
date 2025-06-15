@@ -44,7 +44,7 @@ function LandingPage() {
 
       {/* Hero */}
       <div className="hero">
-        <h1 className="title">🚀 CodeSynx</h1>
+        <h1 className="title">🚀 CodeSyncX</h1>
         <p className="tagline">Collaborate. Code. Connect.</p>
         <p className="subtitle">
           Real-time collaborative code editor with GitHub integration.
