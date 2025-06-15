@@ -21,7 +21,7 @@ function Home() {
       async function getAccessToken() {
         try {
           const response = await fetch(
-            `http://localhost:5000/github/getAccessToken?code=${codeParam}`
+            `/github/getAccessToken?code=${codeParam}`
           );
           const data = await response.json();
           if (data.access_token) {
@@ -35,11 +35,11 @@ function Home() {
       }
       getAccessToken();
     }
-  }, [rerender]);
+  }, []);
 
   async function getUserData() {
     try {
-      const response = await fetch("http://localhost:5000/github/getUserData", {
+      const response = await fetch("/github/getUserData", {
         method: "GET",
         headers: {
           Authorization: "Bearer " + localStorage.getItem("access_token"),
@@ -66,7 +66,7 @@ function Home() {
 
   const signupUser = async () => {
     try {
-      const res = await fetch("http://localhost:5000/users/signup", {
+      const res = await fetch("/users/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, email, password }),
@@ -88,14 +88,14 @@ function Home() {
 
   const loginUser = async () => {
     try {
-      const res = await fetch("http://localhost:5000/users/login", {
+      const res = await fetch("/users/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
       const data = await res.json();
       if (data.token) {
-        localStorage.setItem("access_token", data.token);
+        // localStorage.setItem("access_token", data.token);
         localStorage.setItem("username", data.username);
         localStorage.setItem("userId", data.userId);
         setUsername(data.username);

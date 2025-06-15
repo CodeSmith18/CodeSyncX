@@ -38,10 +38,11 @@ function Dashboard() {
     try {
       setLoadingFiles(true);
       const token = localStorage.getItem("access_token");
+      if(!token ) return toast.error("Login with github First");
       const username = localStorage.getItem("username");
 
       const response = await fetch(
-        `http://localhost:5000/github/listRepoFiles?owner=${username}&repo=newww`,
+        `/github/listRepoFiles?owner=${username}&repo=newww`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -62,7 +63,7 @@ function Dashboard() {
 
   const fullcode = async (codeId) => {
     try {
-      const response = await fetch(`http://localhost:5000/users/getcode/${codeId}`);
+      const response = await fetch(`/users/getcode/${codeId}`);
       const data = await response.json();
       navigate(`/editor/${codeId}`, {
         state: { username, codeDetails: data },
@@ -75,7 +76,7 @@ function Dashboard() {
   const getCodesList = async () => {
     const userId = localStorage.getItem("userId");
     try {
-      const response = await fetch(`http://localhost:5000/users/${userId}`, {
+      const response = await fetch(`/users/${userId}`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
@@ -90,7 +91,7 @@ function Dashboard() {
 
   const handleDelete = async (codeId) => {
     try {
-      const response = await fetch(`http://localhost:5000/users/deletecode/${codeId}`, {
+      const response = await fetch(`/users/deletecode/${codeId}`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
       });
@@ -143,11 +144,15 @@ function Dashboard() {
       <div className="hamburger" onClick={toggleMenu}>☰</div>
 
       {menuOpen && <div className="overlay" onClick={closeMenu}></div>}
-
+   
     <div className={`menubar ${menuOpen ? "show" : "hide"}`} ref={menuRef}>
   <div className="menu-header">
     <button className="close-btn" onClick={closeMenu}>×</button>
   </div>
+
+ <button > <h3  onClick={()=>{
+  navigate('/')
+ }} className="tit">🚀CodeSynx</h3> </button>
 
   <button
     className={activeSection === "editorsection" ? "active" : ""}

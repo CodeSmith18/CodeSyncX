@@ -17,20 +17,7 @@ import axios from "axios";
 const LANGUAGES = [
   "python",
   "java",
-  "cpp",
-  "nodejs",
-  "c",
-  "ruby",
-  "go",
-  "scala",
-  "bash",
-  "sql",
-  "pascal",
-  "csharp",
-  "php",
-  "swift",
-  "rust",
-  "r",
+  "cpp"
 ];
 
 function EditorPage() {
@@ -141,20 +128,17 @@ function EditorPage() {
 
   const runCode = async () => {
     setIsCompiling(true);
+
     try {
       const response = await axios.post(
-        `http://localhost:5000/compile/${selectedLanguage}`,
+        `/compile/${selectedLanguage}`,
         {
           code: codeRef.current,
           input: input,
         }
       );
 
-      const output = response.data.stdout
-        ? response.data.stdout.trim()
-        : JSON.stringify(response.data);
-
-      setOutput(output);
+     setOutput(response.data.result?.trim() || "No output");
     } catch (error) {
       const errorMessage =
         error.response?.data?.error ||
@@ -163,6 +147,7 @@ function EditorPage() {
     } finally {
       setIsCompiling(false);
     }
+  
   };
 
   const toggleCompileWindow = () => {
@@ -174,9 +159,10 @@ function EditorPage() {
       const repo = "CodeSync";
       const commitMessage = "Code uploaded from Editor";
       const token = localStorage.getItem("access_token");
+        if(!token ) return toast.error("Login with github First");
 
       const response = await axios.post(
-        "http://localhost:5000/github/uploadFile",
+        "/github/uploadFile",
         {
           owner,
           repo,
@@ -206,7 +192,7 @@ function EditorPage() {
     console.log(code);
 
     try {
-      const response = await fetch("http://localhost:5000/users/uploadCode", {
+      const response = await fetch("/users/uploadCode", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

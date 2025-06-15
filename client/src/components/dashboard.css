@@ -249,6 +249,17 @@ body, html {
   z-index: 998;
 }
 
+.tit {
+  font-size: 1.6rem;
+  font-weight: bold;
+  background: linear-gradient(to right, #00f2fe, #4facfe);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.5rem;
+  z-index: 1;
+
+}
+
 
 /* Mobile View */
 @media (max-width: 768px) {
@@ -288,6 +299,8 @@ body, html {
     font-size: 14px;
     white-space: nowrap;
   }
+
+  
 
   .dash {
     width: 100%;

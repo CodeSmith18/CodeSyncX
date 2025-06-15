@@ -1,0 +1,5 @@
+FROM python:3
+
+WORKDIR /app
+
+CMD ["sh", "-c", "timeout 5 python main.py < input.txt"]
