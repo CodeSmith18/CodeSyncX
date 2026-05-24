@@ -1,41 +1,153 @@
 # CodeSyncX
 
-CodeSyncX is a real-time collaborative code editor built with React, CodeMirror, Express, Socket.IO, and MongoDB. Users can create shared coding rooms, edit together live, run C++, Java, and Python code, save programs, and upload editor contents to GitHub.
+🚀 Live Demo: https://codesyncx.ritik18.online
 
-## Features
+CodeSyncX is a real-time collaborative code editor built with React, CodeMirror, Express, Socket.IO, Redis, BullMQ, Docker, and MongoDB. Users can create shared coding rooms, collaborate live, execute code in multiple languages, save programs, and upload editor contents directly to GitHub.
 
-- Real-time collaborative editing with Socket.IO rooms.
-- Browser code editor powered by CodeMirror.
-- Code execution for C++, Java, and Python.
-- Email/password authentication with JWT.
-- GitHub OAuth login and GitHub file upload with Octokit.
-- Saved programs dashboard backed by MongoDB.
-- Shareable editor room links.
+---
 
-## Tech Stack
+# Features
 
-- Frontend: React, React Router, CodeMirror, Socket.IO Client
-- Backend: Node.js, Express, Socket.IO
-- Database: MongoDB with Mongoose
-- Auth: JWT, bcrypt, GitHub OAuth
-- GitHub API: Octokit
-- Runtime: Node.js 20
-- Queue/Realtime Scaling: Redis, BullMQ, Socket.IO Redis Adapter
+- Real-time collaborative editing using Socket.IO rooms
+- Browser-based code editor powered by CodeMirror
+- Multi-language code execution support
+- Secure JWT authentication system
+- GitHub OAuth login and repository upload support
+- Saved programs dashboard backed by MongoDB
+- Shareable coding room links
+- Redis + BullMQ powered execution queue
+- Docker sandbox based isolated code execution
+- Production deployment on AWS EC2 with Nginx and PM2
 
-## Prerequisites
+---
+
+# Live Deployment
+
+🌐 https://codesyncx.ritik18.online
+
+---
+
+# Screenshots
+
+## 1. Deployment & Private Infrastructure Flow
+![Deployment & Infrastructure](screenshots/1.jpeg)
+
+## 2. Complete System Architecture
+![System Architecture](screenshots/2.jpeg)
+
+## 3. Online Code Execution Pipeline
+![Code Execution Flow](screenshots/3.jpeg)
+
+## 4. Landing Page / Hero Section
+![Landing Page](screenshots/4.jpeg)
+
+## 5. Real-time Collaborative Editor Workspace
+![Collaborative Editor](screenshots/5.jpeg)
+
+## 6. Room Creation & Developer Dashboard
+![Developer Dashboard](screenshots/6.jpeg)
+
+## 7. Saved Programs Dashboard
+![Saved Programs](screenshots/7.jpeg)
+
+## 8. GitHub Upload & Commit Integration
+![GitHub Integration](screenshots/8.jpeg)
+---
+
+# Architecture Overview
+
+## High-Level System Design
+
+- Frontend built using React and CodeMirror
+- Backend powered by Node.js and Express
+- Real-time communication using Socket.IO
+- Redis and BullMQ used for scalable job queue management
+- Docker sandbox execution for isolated code compilation
+- MongoDB Atlas for persistent cloud database storage
+- AWS EC2 deployment with PM2 and Nginx reverse proxy
+
+---
+
+# Tech Stack
+
+## Frontend
+
+- React.js
+- React Router
+- CodeMirror
+- Socket.IO Client
+
+## Backend
+
+- Node.js
+- Express.js
+- Socket.IO
+
+## Database
+
+- MongoDB
+- Mongoose
+
+## Authentication
+
+- JWT Authentication
+- bcrypt
+- GitHub OAuth
+
+## Infrastructure
+
+- Redis
+- BullMQ
+- Docker
+- PM2
+- Nginx
+- AWS EC2
+
+## APIs
+
+- GitHub API using Octokit
+
+---
+
+# Highlights
+
+- Built scalable collaborative editor architecture using Socket.IO rooms
+- Implemented Redis-backed execution queue using BullMQ
+- Designed Docker-based isolated execution sandbox for secure compilation
+- Deployed production-ready infrastructure on AWS EC2 using PM2 and Nginx
+- Integrated GitHub OAuth authentication and repository upload functionality
+
+---
+
+# Supported Languages
+
+The current compiler API supports:
+
+- C++
+- Java
+- Python
+
+---
+
+# Prerequisites
 
 - Node.js 20
 - MongoDB local instance or MongoDB Atlas URI
-- Redis for queued code execution
-- GitHub OAuth App for GitHub login/upload
+- Redis server
+- Docker (for sandbox execution)
+- GitHub OAuth App
 
-If you use `nvm`:
+If using nvm:
 
 ```bash
 nvm use
 ```
 
-## Environment Variables
+---
+
+# Environment Variables
+
+## Backend Environment
 
 Create `backend/.env` from `backend/.env.example`:
 
@@ -53,7 +165,13 @@ REDIS_RATE_LIMIT_ENABLED=false
 EXECUTION_MODE=local
 ```
 
-For MongoDB Atlas, replace `MONGO_URL` with your `mongodb+srv://...` connection string.
+For MongoDB Atlas:
+
+```env
+MONGO_URL=mongodb+srv://...
+```
+
+## Frontend Environment
 
 Create `client/.env` from `client/.env.example`:
 
@@ -62,33 +180,35 @@ REACT_APP_BACKEND_URL=http://localhost:5000
 REACT_APP_GITHUB_CLIENT_ID=your_github_client_id
 ```
 
-For local GitHub OAuth testing, set your GitHub OAuth App callback URL to:
+For local GitHub OAuth testing:
 
 ```text
 http://localhost:3000/login
 ```
 
-## Local Setup
+---
 
-Install dependencies:
+# Local Setup
+
+## Install Dependencies
 
 ```bash
 npm run install:all
 ```
 
-Start the backend:
+## Start Backend
 
 ```bash
 npm run dev:backend
 ```
 
-Start the execution worker in a second terminal:
+## Start Worker
 
 ```bash
 npm run dev:worker
 ```
 
-Start the frontend in a third terminal:
+## Start Frontend
 
 ```bash
 npm run dev:client
@@ -100,42 +220,121 @@ Open:
 http://localhost:3000
 ```
 
-## Production Deployment
+---
 
-The recommended single-server deployment is:
+# Production Deployment
 
-- Nginx serves `client/build`.
-- Nginx proxies `/compile`, `/github`, `/users`, `/health`, and `/socket.io` to the backend on `127.0.0.1:5000`.
-- PM2 runs the backend API and execution worker.
-- Redis runs locally through Docker Compose.
-- MongoDB runs on Atlas.
-- Docker sandbox mode runs code in the `codesyncx-runner` image.
+Recommended production architecture:
 
-See [docs/ec2-deployment.md](docs/ec2-deployment.md) for the full AWS EC2 deployment runbook.
+- Nginx serves frontend build files
+- Nginx proxies backend APIs and Socket.IO
+- PM2 manages backend API and worker processes
+- Redis runs using Docker Compose
+- MongoDB Atlas handles persistent storage
+- Docker sandbox executes user code securely
 
-Backend health check:
+## Health Check Endpoints
 
 ```text
 http://localhost:5000/health
 http://localhost:5000/health/redis
 ```
 
-## System Design Infrastructure
+---
 
-Code execution is queued through Redis/BullMQ and processed by a dedicated worker. The worker can run in local mode for development or Docker sandbox mode for isolated execution.
+# System Design Infrastructure
 
-See [docs/system-design-infra.md](docs/system-design-infra.md) for Redis setup, worker commands, Docker sandbox mode, rate limiting, and Socket.IO Redis adapter details.
+Code execution is queued through Redis and BullMQ and processed by a dedicated execution worker.
 
-## Supported Languages
+Execution modes:
 
-The current compiler API supports:
+- Local execution mode for development
+- Docker sandbox mode for isolated secure execution
 
-- C++
-- Java
-- Python
+Infrastructure includes:
 
-## Known Limitations
+- Redis-based queue management
+- Socket.IO Redis adapter support
+- Docker sandbox execution
+- Rate limiting support
+- PM2 process management
 
-- Docker sandbox execution requires Docker and the `codesyncx-runner` image.
-- Collaborative room state is in memory today; persistent room recovery is planned.
-- GitHub upload currently targets the `CodeSync` repository.
+---
+
+# Core Features Showcase
+
+✅ Real-time collaborative coding
+
+✅ Multi-language code execution
+
+✅ GitHub OAuth authentication
+
+✅ GitHub repository upload support
+
+✅ Saved programs dashboard
+
+✅ Room-based collaboration
+
+✅ Redis + BullMQ execution queue
+
+✅ Docker sandbox execution
+
+✅ AWS EC2 production deployment
+
+---
+
+# Known Limitations
+
+- Docker sandbox execution requires Docker and the `codesyncx-runner` image
+- Collaborative room state is currently in-memory
+- Persistent room recovery is planned for future releases
+- GitHub upload currently targets the `CodeSync` repository
+
+---
+
+# Future Improvements
+
+- Persistent collaborative room recovery
+- Multi-file project support
+- Custom runtime environments
+- Kubernetes-based scaling
+- AI-assisted code collaboration
+- Voice collaboration support
+
+---
+
+# Repository Topics
+
+Recommended GitHub topics:
+
+```text
+react
+nodejs
+socketio
+mongodb
+redis
+bullmq
+collaborative-editor
+system-design
+docker
+aws
+realtime-app
+```
+
+---
+
+# Author
+
+Ritik Raj
+
+- MERN Stack Developer
+- Competitive Programmer
+- System Design Enthusiast
+- Electronics and Communication Engineering Student at BIT Mesra
+
+---
+
+# License
+
+This project is licensed under the MIT License.
+
