@@ -1,0 +1,21 @@
+{
+  "name": "codesyncx",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install:all": "cd backend && npm install && cd ../client && npm install",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:worker": "cd backend && npm run dev:worker",
+    "dev:client": "cd client && npm start",
+    "start:backend": "cd backend && npm start",
+    "start:worker": "cd backend && npm run start:worker",
+    "build:client": "cd client && npm run build",
+    "build:runner": "docker build -t codesyncx-runner ./runner",
+    "pm2:start": "pm2 start ecosystem.config.cjs",
+    "pm2:reload": "pm2 reload ecosystem.config.cjs --update-env",
+    "pm2:logs": "pm2 logs"
+  },
+  "engines": {
+    "node": "20.x"
+  }
+}
