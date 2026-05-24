@@ -30,25 +30,25 @@ CodeSyncX is a real-time collaborative code editor built with React, CodeMirror,
 # Screenshots
 
 ## 1. Deployment & Private Infrastructure Flow
-![Deployment & Infrastructure](screenshots/1.jpeg)
+![Deployment & Infrastructure](screenshots/3.jpeg)
 
 ## 2. Complete System Architecture
-![System Architecture](screenshots/2.jpeg)
+![System Architecture](screenshots/4.jpeg)
 
 ## 3. Online Code Execution Pipeline
-![Code Execution Flow](screenshots/3.jpeg)
+![Code Execution Flow](screenshots/7.jpeg)
 
 ## 4. Landing Page / Hero Section
-![Landing Page](screenshots/4.jpeg)
+![Landing Page](screenshots/1.jpeg)
 
 ## 5. Real-time Collaborative Editor Workspace
-![Collaborative Editor](screenshots/5.jpeg)
+![Collaborative Editor](screenshots/2.jpeg)
 
 ## 6. Room Creation & Developer Dashboard
-![Developer Dashboard](screenshots/6.jpeg)
+![Developer Dashboard](screenshots/5.jpeg)
 
 ## 7. Saved Programs Dashboard
-![Saved Programs](screenshots/7.jpeg)
+![Saved Programs](screenshots/6.jpeg)
 
 ## 8. GitHub Upload & Commit Integration
 ![GitHub Integration](screenshots/8.jpeg)
